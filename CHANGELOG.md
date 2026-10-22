@@ -4,6 +4,10 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-22
+### Fixed
+- Median strength now grows smoothly along the whole slider: the number of passes used to change at fixed points and made the effect dip slightly before rising again.
+
 ## [0.16.0] - 2026-10-22
 ### Fixed
 - The lighting preset matching the current lights is now highlighted, so the app visibly starts with Rembrandt selected; it deselects as soon as you tweak a light.
