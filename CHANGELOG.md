@@ -4,6 +4,14 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-22
+### Changed
+- Median rewritten: 7x7 window with a true median (bisection on luminance), up to 6 passes; much stronger and edge-preserving.
+- Posterize rewritten: bands are computed on the real tonal range of the image ("Distribute tones", on by default), with a contour-cleaning slider and anti-aliased band edges.
+- Ambient light slider removed: ambient light now comes only from the optional environment image (HDRI). The light estimator no longer fits an ambient term.
+### Fixed
+- Filters (median, posterize, blur, grayscale) now also apply to the reference image in the side-by-side and stacked layouts, not only in floating mode.
+
 ## [0.12.0] - 2026-10-22
 ### Changed
 - Bottom sheet on iPhone and portrait iPad now follows the finger continuously while dragging the grip, then snaps smoothly to peek / half / full (velocity-aware). A tap on the grip still cycles the states.
