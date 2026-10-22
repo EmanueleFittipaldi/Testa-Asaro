@@ -1048,7 +1048,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
 
   var syncers = [];
   function cur() { return S.lights[S.sel]; }
-  function changed() { updateScene(); syncReadout(); syncPad(); save(); }
+  function changed() { updateScene(); syncReadout(); syncPad(); markPresets(); save(); }
   function manualEdit(id) { if (lm.review && /^r-(h|int|k|soft|az|el)/.test(id)) lmFinish(); }
   function bind(id, get, set, fmt) {
     var el = $(id), o = $(id + '-o');
@@ -1146,6 +1146,25 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
       return '<span class="chipw"><button type="button" class="chip" data-upreset="' + i + '">' + esc(p.n) + '</button><button type="button" class="chip-x" data-udel="' + i + '" aria-label="Elimina il preset ' + esc(p.n) + '" title="Elimina">&times;</button></span>';
     }).join('');
     $('presets').innerHTML = h;
+    markPresets();
+  }
+  /* il preset che coincide con le luci attuali risulta selezionato */
+  function presetMatches(p) {
+    return p.L.every(function (a, i) {
+      var L = S.lights[i];
+      if (!L) return true;
+      if (!!a[0] !== !!L.on) return false;
+      if (!a[0]) return true;
+      return Math.abs(a[1] - L.int) < 0.006 && Math.abs(a[2] - L.k) < 50 && Math.abs(a[3] - L.soft) < 0.26 && Math.abs(a[4] - L.az) < 0.6 && Math.abs(a[5] - L.el) < 0.6;
+    });
+  }
+  function markPresets() {
+    var box = $('presets');
+    if (!box) return;
+    Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (b) {
+      var p = b.hasAttribute('data-preset') ? PRESETS[parseInt(b.getAttribute('data-preset'), 10)] : b.hasAttribute('data-upreset') ? S.userPresets[parseInt(b.getAttribute('data-upreset'), 10)] : null;
+      b.setAttribute('aria-pressed', String(!!p && presetMatches(p)));
+    });
   }
   function applyPreset(p) {
     p.L.forEach(function (a, i) {

@@ -4,6 +4,10 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-22
+### Fixed
+- The lighting preset matching the current lights is now highlighted, so the app visibly starts with Rembrandt selected; it deselects as soon as you tweak a light.
+
 ## [0.15.0] - 2026-10-22
 ### Changed
 - The side panel on Mac, landscape iPad and landscape phones now has the same tabs as the phone sheet (Lights, Material, Environment, Reference, Head and model) to jump straight to a section instead of scrolling.
