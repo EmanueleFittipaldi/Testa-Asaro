@@ -4,6 +4,12 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-22
+### Changed
+- Median is gentler: the slider now spans from subtle to strong in smaller steps.
+### Fixed
+- Moving the median, posterize or blur sliders now updates the reference image in the side-by-side and stacked layouts live (it only refreshed when toggling a filter before).
+
 ## [0.13.0] - 2026-10-22
 ### Changed
 - Median rewritten: 7x7 window with a true median (bisection on luminance), up to 6 passes; much stronger and edge-preserving.

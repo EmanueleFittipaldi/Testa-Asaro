@@ -2874,7 +2874,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
       nxt = nx(); fxPass(matBlur, cur, nxt); cur = nxt;
     }
     if (S.med) {
-      var R = S.medAmt * 1.5, passes = clamp(Math.ceil(R / 8), 1, 6);
+      var R = S.medAmt * 0.6, passes = clamp(Math.ceil(R / 8), 1, 6);
       matMedian.uniforms.uTexel.value.set(1 / w, 1 / h);
       matMedian.uniforms.uStep.value = Math.max(0.5, (R / passes) * k / 3);
       for (i = 0; i < passes; i++) { nxt = nx(); fxPass(matMedian, cur, nxt); cur = nxt; }
@@ -2900,6 +2900,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     if (refMesh.visible) { renderer.clearDepth(); renderer.render(refScene, refCam); }
   }
   function renderFrame() {
+    rpSchedule();
     if (!anyFx()) { drawBase(null); return; }
     drawBase(rtA);
     runChain(rtA, rtB, rtC, fxW, fxH, renderer.getPixelRatio(), null);
