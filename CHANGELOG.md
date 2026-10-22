@@ -4,6 +4,10 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-22
+### Changed
+- Bottom sheet on iPhone and portrait iPad now follows the finger continuously while dragging the grip, then snaps smoothly to peek / half / full (velocity-aware). A tap on the grip still cycles the states.
+
 ## [0.11.0] - 2026-10-22
 ### Added
 - Adaptive layout for Mac, iPad and iPhone: on iPhone and portrait iPad the controls live in a bottom sheet (peek / half / full height) with tabs (Lights, Material, Environment, Reference, Head and model); on Mac and landscape iPad the side panel stays, narrower on medium screens, and can be hidden with a button below the zoom controls.
