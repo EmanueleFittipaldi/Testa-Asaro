@@ -13,7 +13,9 @@ The Asaro head is the classic planar head used in ateliers to teach how light fa
 - **Responsive layout**: side panel on Mac and landscape iPad (collapsible), bottom sheet with tabs on iPhone and portrait iPad.
 - **Lighting**: key, fill and rim lights with color and intensity, lighting presets, and HDRI environment lighting (built-in environments or your own `.hdr`, `.jpg`, `.png` panoramas).
 - **Materials**: several surface materials, or the original colors of a loaded model.
-- **Value studies**: median, posterize, blur and value-scale filters to see big shapes and value groups.
+- **Value studies**: grayscale, blur and value-scale tools to see big shapes and value groups.
+- **Shadowbox**: put the model in a three-sided box (back, floor, one side) of any color to study cast shadows and colored reflected light.
+- **Timed poses**: gesture-drawing style sessions with a chosen duration and number of poses, fixed or random model, and a random view and light (at most two lights, moderate intensity) at every change.
 - **Reference image**: floating or split-screen, to compare the head with a photo.
 - **Pose and light estimation**: mark a few points on your reference and the app turns the head and places the lights to match it.
 - **Presets and settings** saved in the browser.

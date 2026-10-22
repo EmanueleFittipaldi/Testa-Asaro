@@ -239,6 +239,21 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
 .guide-btns { display: flex; flex-wrap: wrap; gap: 6px; }
 .guide-btns button { border: 0; border-radius: 8px; padding: 6px 10px; background: rgba(255, 255, 255, 0.16); font-size: 13px; cursor: pointer; }
 .guide-btns button.go { background: var(--accent); color: var(--accent-ink); }
+.hud-sess { left: 50%; transform: translateX(-50%); bottom: 10px; display: flex; align-items: baseline; gap: 12px; padding: 8px 16px; font-size: 14px; white-space: nowrap; max-width: calc(100% - 130px); }
+.hud-sess { flex-wrap: wrap; justify-content: center; row-gap: 6px; }
+.sess-hb { display: flex; gap: 6px; }
+.sess-hb button { border: 0; background: rgba(255,255,255,0.16); color: inherit; padding: 7px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.hud-sess strong { font-size: 26px; font-weight: 600; letter-spacing: 0.02em; }
+.sess-custom { display: flex; gap: 10px; align-items: center; }
+.sess-custom label { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+.sess-custom input { width: 64px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); color: var(--fg); font-size: 16px; }
+.sess-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.sess-btns .btn { flex: 1 1 auto; }
+.sb-sw { display: flex; flex-wrap: wrap; gap: 8px; }
+.sb-sw button { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
+.sb-sw button[aria-pressed="true"] { border-color: var(--fg); box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--fg); }
+.sb-row { display: flex; align-items: center; gap: 10px; }
+.sb-row input[type="color"] { width: 44px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: transparent; }
 .lm { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid #00ff9d; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #000; cursor: grab; touch-action: none; }
 .lm.bad { border-color: #ff4d4d; }
 .lm.bad span { color: #ff4d4d; }
@@ -273,6 +288,7 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
       <button type="button" id="zoom-out" aria-label="Allontana" title="Allontana (&minus;)">&minus;</button>
     </div>
     <div class="hud hud-ptoggle"><button type="button" id="panel-toggle" aria-label="Mostra o nascondi il pannello" title="Mostra o nascondi il pannello"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M12.5 3.5v13"/></svg></button></div>
+    <div class="hud hud-sess" id="sess-hud" hidden><span id="sess-n"></span><strong class="mono" id="sess-t"></strong><span class="sess-hb" id="sess-hb" hidden><button type="button" id="hud-pause">Pausa</button><button type="button" id="hud-skip">Salta</button><button type="button" id="hud-stop">Ferma</button></span></div>
     <button type="button" class="hud hint-i" id="hint-i" aria-label="Come si muove la vista" aria-expanded="false">i</button>
     <div class="hud hud-bl" id="hint" hidden></div>
     </div>
@@ -350,6 +366,11 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
     </details>
 
     <details class="sec">
+      <summary>Shadowbox</summary>
+      <div class="sec-body" id="sec-sb"></div>
+    </details>
+
+    <details class="sec">
       <summary>Materiale e piani</summary>
       <div class="sec-body">
         <div class="chips" id="mats"></div>
@@ -368,26 +389,19 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
       <summary>Studio dei valori</summary>
       <div class="sec-body">
         <label class="check"><input type="checkbox" id="c-gray"> Scala di grigi</label>
-        <div class="fx">
-          <label class="check"><input type="checkbox" id="c-med"> Median</label>
-          <div id="sec-med"></div>
-        </div>
-        <div class="fx">
-          <label class="check"><input type="checkbox" id="c-poster"> Posterizza</label>
-          <div id="sec-poster"></div>
-          <div class="seg4" id="pmode">
-            <button type="button" data-pmode="gray" aria-pressed="true">Grigi</button>
-            <button type="button" data-pmode="color" aria-pressed="false">Colore</button>
-          </div>
-        </div>
         <div id="sec-blur"></div>
         <div class="fx">
           <label class="check"><input type="checkbox" id="c-scale"> Scala dei valori sulla vista</label>
           <div id="sec-scale" class="sec-body" style="padding:0;gap:6px"></div>
           <button type="button" class="btn" id="scale-rot">Ruota la scala</button>
         </div>
-        <p class="sub">I filtri agiscono su tutta la vista e sull&rsquo;immagine di riferimento, anche affiancata o sovrapposta. Median appiattisce i dettagli piccoli mantenendo i bordi. Posterizza riduce l&rsquo;immagine a pochi toni piatti: con &ldquo;Distribuisci i toni&rdquo; li usa tutti, dal pi&ugrave; scuro al pi&ugrave; chiaro dell&rsquo;immagine. La scala dei valori si trascina sopra il soggetto: confronta ogni zona con i toni, dal pi&ugrave; scuro (1) al pi&ugrave; chiaro.</p>
+        <p class="sub">I filtri (scala di grigi e sfocatura) agiscono su tutta la vista e sull&rsquo;immagine di riferimento, anche affiancata o sovrapposta. La scala dei valori si trascina sopra il soggetto: confronta ogni zona con i toni, dal pi&ugrave; scuro (1) al pi&ugrave; chiaro.</p>
       </div>
+    </details>
+
+    <details class="sec">
+      <summary>Pose temporizzate</summary>
+      <div class="sec-body" id="sec-sess"></div>
     </details>
 
     <details class="sec">
@@ -784,11 +798,13 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
       ],
       sel: 0, bg: 48, shadows: true,
       mat: 'gesso', gloss: 0.1, shade: 'smooth', userPresets: [], userMats: [],
-      focal: 85, gray: false, med: false, medAmt: 6, poster: false, pmode: 'gray', tones: 5, pAuto: true, pSmooth: 3, blur: 0,
+      focal: 85, gray: false, blur: 0,
       estPose: true, estLight: true, estAlignOn: true, refLayout: 'float', split: 55,
       scaleOn: false, scaleN: 9, scaleSz: 36, scaleVert: true, refOp: 100, refLock: true,
       env: '', envRot: 0, envInt: 1, envBg: true, model: 'head',
-      tab: 'luci', sheet: 'half', panelOff: false
+      tab: 'luci', sheet: 'half', panelOff: false,
+      sb: false, sbColor: '#9a9a9a', sbSide: 'left', sbBounce: 1,
+      sessTime: 300, sessCustom: false, sessCount: 6, sessRandom: false, sessSound: true
     };
   }
   var S = defaults(), localT = 0, touched = false, lsOK = false;
@@ -991,6 +1007,83 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     if (headMat.flatShading !== flat) { headMat.flatShading = flat; headMat.needsUpdate = true; }
   }
 
+
+  /* ---------- shadowbox: scatola a tre pareti (fondo, pavimento, un lato) con luce riflessa colorata ---------- */
+  var bounce = new THREE.LightProbe();
+  bounce.intensity = 0;
+  scene.add(bounce);
+  var sbMat = new THREE.MeshPhongMaterial({ color: 0x9a9a9a, specular: 0x000000, shininess: 0 });
+  var sbGroup = new THREE.Group();
+  sbGroup.visible = false;
+  scene.add(sbGroup);
+  var sbFloor = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), sbMat), sbBack = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), sbMat), sbSideM = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), sbMat);
+  [sbFloor, sbBack, sbSideM].forEach(function (m) { m.receiveShadow = true; m.castShadow = false; sbGroup.add(m); });
+  sbFloor.rotation.x = -Math.PI / 2;
+  var sbGeom = null, sbKey = '';
+  /* misure del modello fermo (senza la rotazione della testa), con un valore di ripiego finché la mesh non è pronta */
+  function sbModelBox() {
+    var r = headPivot.rotation.clone(), b = new THREE.Box3();
+    headPivot.rotation.set(0, 0, 0); headPivot.updateMatrixWorld(true);
+    try { if (custom) b.setFromObject(custom); else if (baseGeo) b.setFromObject(headMesh); } catch (e) { b.makeEmpty(); }
+    headPivot.rotation.copy(r); headPivot.updateMatrixWorld(true);
+    if (b.isEmpty() || !isFinite(b.min.x + b.max.x + b.min.y + b.max.y + b.min.z + b.max.z)) b.set(new THREE.Vector3(-0.87, -1.95, -1.03), new THREE.Vector3(0.87, 1.15, 1.03));
+    return b;
+  }
+  function sbFit() {
+    var key = shownModel + '|' + (custom ? [custom.position.x, custom.position.y, custom.position.z, custom.rotation.x, custom.rotation.y, custom.rotation.z, custom.scale.x].join(',') : 'h') + '|' + S.sbSide + '|' + (baseGeo ? 1 : 0);
+    if (sbGeom && key === sbKey) return sbGeom;
+    sbKey = key;
+    var b = sbModelBox(), c = b.getCenter(new THREE.Vector3());
+    var W = Math.max(2.0, Math.max(Math.abs(b.min.x), Math.abs(b.max.x)) + 0.6);
+    var floorY = b.min.y - 0.02, H = (b.max.y - b.min.y) + 1.0, wallZ = b.min.z - 0.45, D = (b.max.z + 1.7) - wallZ;
+    var left = S.sbSide !== 'right';
+    sbFloor.scale.set(2 * W, D, 1); sbFloor.position.set(0, floorY, wallZ + D / 2);
+    sbBack.scale.set(2 * W, H, 1); sbBack.position.set(0, floorY + H / 2, wallZ);
+    sbSideM.scale.set(D, H, 1); sbSideM.rotation.y = left ? Math.PI / 2 : -Math.PI / 2; sbSideM.position.set(left ? -W : W, floorY + H / 2, wallZ + D / 2);
+    sbGeom = { W: W, floorY: floorY, H: H, wallZ: wallZ, D: D, left: left, c: c };
+    return sbGeom;
+  }
+  /* luce che i muri rimandano alla testa: armoniche sferiche della luce diffusa dalle pareti illuminate dalle luci */
+  function sbBounceSH(g) {
+    var lights = [], k, i, j;
+    S.lights.forEach(function (L) {
+      if (!L.on || !(L.int > 0)) return;
+      var az = L.az * D2R, el = L.el * D2R, col = kelvinColor(L.k);
+      lights.push({ d: [Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)], r: col.r * L.int, g: col.g * L.int, b: col.b * L.int });
+    });
+    var wc = new THREE.Color(S.sbColor).convertSRGBToLinear();
+    function irr(n) {
+      var r = 0, gg = 0, bb = 0;
+      lights.forEach(function (l) { var t = Math.max(0, n[0] * l.d[0] + n[1] * l.d[1] + n[2] * l.d[2]); r += l.r * t; gg += l.g * t; bb += l.b * t; });
+      return [wc.r * r, wc.g * gg, wc.b * bb];
+    }
+    var E = { floor: irr([0, 1, 0]), back: irr([0, 0, 1]), side: irr([g.left ? 1 : -1, 0, 0]) };
+    var c0 = g.c, N1 = 32, N2 = 16, co = new Float64Array(27), ws = 0, x0 = g.W, yTop = g.floorY + g.H, zF = g.wallZ + g.D;
+    for (j = 0; j < N2; j++) {
+      var lat = (0.5 - (j + 0.5) / N2) * Math.PI, cl = Math.cos(lat), y = Math.sin(lat);
+      for (i = 0; i < N1; i++) {
+        var lon = ((i + 0.5) / N1 - 0.5) * 2 * Math.PI, x = cl * Math.sin(lon), z = cl * Math.cos(lon), best = 1e9, rad = null, t, px, py, pz;
+        if (y < -1e-6) { t = (g.floorY - c0.y) / y; px = c0.x + x * t; pz = c0.z + z * t; if (t > 0 && t < best && Math.abs(px) <= x0 && pz >= g.wallZ && pz <= zF) { best = t; rad = E.floor; } }
+        if (z < -1e-6) { t = (g.wallZ - c0.z) / z; px = c0.x + x * t; py = c0.y + y * t; if (t > 0 && t < best && Math.abs(px) <= x0 && py >= g.floorY && py <= yTop) { best = t; rad = E.back; } }
+        var sx = g.left ? -x0 : x0;
+        if ((g.left ? x < -1e-6 : x > 1e-6)) { t = (sx - c0.x) / x; py = c0.y + y * t; pz = c0.z + z * t; if (t > 0 && t < best && py >= g.floorY && py <= yTop && pz >= g.wallZ && pz <= zF) { best = t; rad = E.side; } }
+        var b9 = [0.282095, 0.488603 * y, 0.488603 * z, 0.488603 * x, 1.092548 * x * y, 1.092548 * y * z, 0.315392 * (3 * z * z - 1), 1.092548 * x * z, 0.546274 * (x * x - y * y)];
+        if (rad) for (k = 0; k < 9; k++) { var q = b9[k] * cl; co[k * 3] += rad[0] * q; co[k * 3 + 1] += rad[1] * q; co[k * 3 + 2] += rad[2] * q; }
+        ws += cl;
+      }
+    }
+    var nm = 4 * Math.PI / ws;
+    for (k = 0; k < 9; k++) bounce.sh.coefficients[k].set(co[k * 3] * nm, co[k * 3 + 1] * nm, co[k * 3 + 2] * nm);
+  }
+  function sbUpdate() {
+    sbGroup.visible = !!S.sb;
+    if (!S.sb) { bounce.intensity = 0; return; }
+    sbMat.color.set(S.sbColor).convertSRGBToLinear();
+    var g = sbFit();
+    sbBounceSH(g);
+    bounce.intensity = S.sbBounce;
+  }
+
   /* ---------- aggiornamento scena ---------- */
   var need = true;
   function updateScene() {
@@ -1015,6 +1108,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     [headMat, customMat].forEach(function (mt) {
       mt.color.copy(col); mt.specular.copy(sp); mt.shininess = 8 + 80 * S.gloss;
     });
+    sbUpdate();
     syncScale();
     need = true;
   }
@@ -1038,12 +1132,31 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     '<button type="button" class="btn" id="env-sun">Porta la luce principale sul punto più luminoso</button></div>' +
     '<p class="sub">Funziona meglio con panorami equirettangolari 2:1. Su polyhaven.com trovi HDRI gratuiti: .hdr oppure .jpg vanno bene. Il panorama sostituisce lo sfondo grigio; le luci direzionali restano attive: per illuminare la testa solo con il panorama, spegnile dalla sezione Luci.</p>';
   $('sec-mat').innerHTML = rng('r-gloss', 'Lucidità', 0, 1, 0.01);
-  $('sec-med').innerHTML = rng('r-med', 'Intensità del median', 1, 40, 1);
-  $('sec-poster').innerHTML = rng('r-tones', 'Numero di toni', 2, 10, 1) + rng('r-psmooth', 'Pulizia dei contorni', 0, 10, 1) +
-    '<label class="check"><input type="checkbox" id="c-pauto"> Distribuisci i toni sull’immagine</label>';
   $('sec-blur').innerHTML = rng('r-blur', 'Sfocatura (occhi socchiusi)', 0, 40, 1);
   $('sec-scale').innerHTML = rng('r-scalen', 'Toni della scala', 3, 11, 1) + rng('r-scalesz', 'Dimensione dei riquadri', 20, 90, 1);
   $('sec-ref').innerHTML = rng('r-refop', 'Opacità', 10, 100, 1);
+
+  var SB_COLORS = [['Grigio', '#9a9a9a'], ['Bianco', '#f2f0ea'], ['Rosso', '#b8352f'], ['Arancio', '#d9782b'], ['Giallo', '#d8b43a'], ['Verde', '#4f8f4a'], ['Azzurro', '#4a86b8'], ['Viola', '#7d5aa6']];
+  $('sec-sb').innerHTML =
+    '<label class="check"><input type="checkbox" id="c-sb"> Metti il modello in una shadowbox</label>' +
+    '<p class="sub-h">Colore della scatola</p>' +
+    '<div class="sb-sw" id="sb-sw">' + SB_COLORS.map(function (c) { return '<button type="button" data-c="' + c[1] + '" style="background:' + c[1] + '" aria-label="' + c[0] + '" title="' + c[0] + '" aria-pressed="false"></button>'; }).join('') + '</div>' +
+    '<div class="sb-row"><input type="color" id="sb-color" aria-label="Colore della shadowbox"><span class="sub">oppure scegli un colore</span></div>' +
+    '<p class="sub-h">Parete laterale</p>' +
+    '<div class="seg4" id="sb-side"><button type="button" data-sbs="left" aria-pressed="true">Sinistra</button><button type="button" data-sbs="right" aria-pressed="false">Destra</button></div>' +
+    rng('r-sbb', 'Luce riflessa', 0, 2, 0.05) +
+    '<p class="sub">Scatola con tre pareti: fondo, pavimento e un lato. Le pareti ricevono le ombre portate del modello e gli rimandano la loro luce colorata: scegli un colore acceso per vedere come tinge le ombre. Le pareti non fanno ombra sul modello, quindi le luci entrano da ogni parte.</p>';
+  $('sec-sess').innerHTML =
+    '<p class="sub-h">Durata di ogni posa</p>' +
+    '<div class="chips" id="sess-times"></div>' +
+    '<div class="sess-custom" id="sess-custom" hidden><label>min <input type="number" id="sess-min" min="0" max="180" step="1" inputmode="numeric"></label><label>sec <input type="number" id="sess-sec" min="0" max="59" step="1" inputmode="numeric"></label></div>' +
+    rng('r-sesscnt', 'Numero di pose', 1, 30, 1) +
+    '<p class="sub-h">Modello</p>' +
+    '<div class="seg4" id="sess-src"><button type="button" data-src="same" aria-pressed="true">Sempre lo stesso</button><button type="button" data-src="random" aria-pressed="false">Modelli a caso</button></div>' +
+    '<label class="check"><input type="checkbox" id="c-sesssnd"> Suono al cambio di posa</label>' +
+    '<div class="sess-btns"><button type="button" class="btn primary" id="sess-start">Avvia la sessione</button><button type="button" class="btn" id="sess-pause" hidden>Pausa</button><button type="button" class="btn" id="sess-skip" hidden>Salta</button><button type="button" class="btn" id="sess-stop" hidden>Ferma</button></div>' +
+    '<p class="sub" id="sess-out"></p>' +
+    '<p class="sub">Ad ogni posa la vista e le luci cambiano a caso: al massimo due luci, mai troppo intense. Anche la prima posa parte con vista e luci casuali. Con &ldquo;Modelli a caso&rdquo; si pescano i modelli di base e quelli che hai caricato.</p>';
   $('sec-view').innerHTML = rng('r-hyaw', 'Rotazione della testa', -180, 180, 1) + rng('r-hpitch', 'Inclinazione della testa', -80, 80, 1) + rng('r-hroll', 'Inclinazione laterale', -60, 60, 1) + rng('r-focal', 'Lunghezza focale', 24, 200, 1);
 
   var syncers = [];
@@ -1086,9 +1199,6 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   bind('r-el', function () { return cur().el; }, function (v) { cur().el = v; }, function (v) { return sgn(v, '°'); });
   bind('r-bg', function () { return S.bg; }, function (v) { S.bg = v; }, function (v) { return Math.round(v) + '%'; });
   bind('r-gloss', function () { return S.gloss; }, function (v) { S.gloss = v; }, function (v) { return Math.round(v * 100) + '%'; });
-  bind('r-med', function () { return S.medAmt; }, function (v) { S.medAmt = v; }, function (v) { return v + ' px'; });
-  bind('r-tones', function () { return S.tones; }, function (v) { S.tones = v; }, function (v) { return String(v); });
-  bind('r-psmooth', function () { return S.pSmooth; }, function (v) { S.pSmooth = v; }, function (v) { return String(v); });
   bind('r-scalen', function () { return S.scaleN; }, function (v) { S.scaleN = v; }, function (v) { return String(v); });
   bind('r-scalesz', function () { return S.scaleSz; }, function (v) { S.scaleSz = v; }, function (v) { return v + ' px'; });
   bind('r-refop', function () { return S.refOp; }, function (v) { S.refOp = v; }, function (v) { return Math.round(v) + '%'; });
@@ -1110,19 +1220,12 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   bindCheck('c-envbg', function () { return S.envBg; }, function (v) { S.envBg = v; });
   syncers.push(function () { $('env-ctl').hidden = !(envData && S.env); });
   bindCheck('c-gray', function () { return S.gray; }, function (v) { S.gray = v; });
-  bindCheck('c-med', function () { return S.med; }, function (v) { S.med = v; });
-  bindCheck('c-poster', function () { return S.poster; }, function (v) { S.poster = v; });
-  bindCheck('c-pauto', function () { return S.pAuto; }, function (v) { S.pAuto = v; });
   bindCheck('c-scale', function () { return S.scaleOn; }, function (v) { S.scaleOn = v; });
   bindCheck('c-est-pose', function () { return S.estPose; }, function (v) { S.estPose = v; });
   bindCheck('c-est-light', function () { return S.estLight; }, function (v) { S.estLight = v; });
   bindCheck('c-est-align', function () { return S.estAlignOn; }, function (v) { S.estAlignOn = v; });
   bindCheck('c-reflock', function () { return S.refLock; }, function (v) { S.refLock = v; if (v && ref.tex) { ref.h = ref.w / ref.aspect; fitRef(); } });
   syncers.push(function () {
-    $('r-med').disabled = !S.med;
-    $('r-tones').disabled = !S.poster;
-    $('r-psmooth').disabled = !S.poster;
-    $('c-pauto').disabled = !S.poster;
     $('r-scalen').disabled = !S.scaleOn;
     $('r-scalesz').disabled = !S.scaleOn;
   });
@@ -1135,7 +1238,6 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   pressGroup('[data-light]', 'data-light', function () { return S.sel; }, function (v) { S.sel = parseInt(v, 10); });
   pressGroup('#rlayout button', 'data-rl', function () { return S.refLayout; }, function (v) { S.refLayout = v; });
   syncers.push(function () { applyLayout(); });
-  pressGroup('#pmode button', 'data-pmode', function () { return S.pmode; }, function (v) { S.pmode = v; });
 
   /* preset e materiali */
   function uid() { return 'u' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36); }
@@ -1296,8 +1398,9 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   var TABS = [
     { k: 'luci', n: 'Luci', s: ['Luci'] },
     { k: 'mat', n: 'Materiale', s: ['Materiale e piani', 'Studio dei valori'] },
-    { k: 'amb', n: 'Ambiente', s: ['Ambiente'] },
+    { k: 'amb', n: 'Ambiente', s: ['Ambiente', 'Shadowbox'] },
     { k: 'rif', n: 'Riferimento', s: ['Immagine di riferimento'] },
+    { k: 'pose', n: 'Pose', s: ['Pose temporizzate'] },
     { k: 'testa', n: 'Testa e modello', s: ['Testa e vista', 'Il tuo modello'] }
   ];
   function secTab(d) {
@@ -1306,7 +1409,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     return 'luci';
   }
   $('tabs').innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-tab="' + t.k + '" aria-selected="false">' + t.n + '</button>'; }).join('');
-  if (['luci', 'mat', 'amb', 'rif', 'testa'].indexOf(S.tab) < 0) S.tab = 'luci';
+  if (['luci', 'mat', 'amb', 'rif', 'pose', 'testa'].indexOf(S.tab) < 0) S.tab = 'luci';
   if (['peek', 'half', 'full'].indexOf(S.sheet) < 0) S.sheet = 'half';
   function applyLayout2(openTab) {
     var compact = !!mqCompact.matches;
@@ -1390,6 +1493,153 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   if (mqCompact.addEventListener) mqCompact.addEventListener('change', function () { applyLayout2(true); });
   else if (mqCompact.addListener) mqCompact.addListener(function () { applyLayout2(true); });
   applyLayout2(true);
+
+
+  /* ---------- shadowbox: controlli ---------- */
+  bindCheck('c-sb', function () { return S.sb; }, function (v) { S.sb = v; });
+  bind('r-sbb', function () { return S.sbBounce; }, function (v) { S.sbBounce = v; }, function (v) { return Math.round(v * 100) + '%'; });
+  pressGroup('#sb-side button', 'data-sbs', function () { return S.sbSide; }, function (v) { S.sbSide = v; });
+  function sbSyncColor() {
+    $('sb-color').value = S.sbColor;
+    Array.prototype.forEach.call($('sb-sw').querySelectorAll('button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-c') === S.sbColor)); });
+  }
+  $('sb-sw').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button') : null;
+    if (!b) return;
+    S.sbColor = b.getAttribute('data-c'); if (!S.sb) S.sb = true;
+    sbSyncColor(); syncAll(); changed();
+  });
+  $('sb-color').addEventListener('input', function () { S.sbColor = this.value; if (!S.sb) S.sb = true; sbSyncColor(); syncAll(); changed(); });
+  syncers.push(function () { sbSyncColor(); $('r-sbb').disabled = !S.sb; });
+
+  /* ---------- pose temporizzate ---------- */
+  var SESS_TIMES = [[30, '30 s'], [60, '1 min'], [180, '3 min'], [300, '5 min'], [600, '10 min'], [900, '15 min']];
+  var sess = { on: false, paused: false, n: 0, total: 0, deadline: 0, left: 0, timer: 0, end: 0, wake: null };
+  var actx = null;
+  function sessBeep(freq, dur) {
+    if (!S.sessSound) return;
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+      o.type = 'sine'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur + 0.05);
+    } catch (e) {}
+  }
+  function sessFmt(ms) {
+    var t = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(t / 60), s2 = t % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s2 < 10 ? '0' : '') + s2;
+  }
+  function sessTimes() {
+    var h = SESS_TIMES.map(function (p) { return '<button type="button" class="chip" data-t="' + p[0] + '" aria-pressed="' + (!S.sessCustom && S.sessTime === p[0]) + '"' + (sess.on ? ' disabled' : '') + '>' + p[1] + '</button>'; }).join('');
+    h += '<button type="button" class="chip" data-t="custom" aria-pressed="' + !!S.sessCustom + '"' + (sess.on ? ' disabled' : '') + '>Personalizzato</button>';
+    $('sess-times').innerHTML = h;
+    $('sess-custom').hidden = !S.sessCustom;
+    $('sess-min').disabled = $('sess-sec').disabled = sess.on;
+  }
+  function sessFillInputs() { $('sess-min').value = Math.floor(S.sessTime / 60); $('sess-sec').value = S.sessTime % 60; }
+  $('sess-times').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.chip') : null;
+    if (!b || sess.on) return;
+    var t = b.getAttribute('data-t');
+    if (t === 'custom') { S.sessCustom = true; sessFillInputs(); } else { S.sessCustom = false; S.sessTime = parseInt(t, 10); }
+    sessTimes(); save();
+  });
+  function sessCustomIn() {
+    var m = clamp(parseInt($('sess-min').value, 10) || 0, 0, 180), s2 = clamp(parseInt($('sess-sec').value, 10) || 0, 0, 59);
+    S.sessTime = m * 60 + s2; save();
+  }
+  $('sess-min').addEventListener('input', sessCustomIn);
+  $('sess-sec').addEventListener('input', sessCustomIn);
+  sessFillInputs();
+  bind('r-sesscnt', function () { return S.sessCount; }, function (v) { S.sessCount = Math.round(v); }, function (v) { return String(Math.round(v)); });
+  bindCheck('c-sesssnd', function () { return S.sessSound; }, function (v) { S.sessSound = v; });
+  pressGroup('#sess-src button', 'data-src', function () { return S.sessRandom ? 'random' : 'same'; }, function (v) { S.sessRandom = v === 'random'; });
+  function sessUi() {
+    sessTimes();
+    $('sess-start').hidden = sess.on;
+    $('sess-pause').hidden = !sess.on; $('sess-skip').hidden = !sess.on; $('sess-stop').hidden = !sess.on;
+    $('sess-pause').textContent = sess.paused ? 'Riprendi' : 'Pausa';
+    $('hud-pause').textContent = sess.paused ? 'Riprendi' : 'Pausa';
+    $('sess-hb').hidden = !sess.on;
+    $('r-sesscnt').disabled = sess.on;
+    Array.prototype.forEach.call(document.querySelectorAll('#sess-src button'), function (b) { b.disabled = sess.on; });
+  }
+  syncers.push(sessUi);
+  function rndIn(a, b) { return a + Math.random() * (b - a); }
+  function wrapDeg(a) { return ((a + 180) % 360 + 360) % 360 - 180; }
+  /* vista e luci a caso: al massimo due luci, intensità sempre contenuta; le luci si scelgono rispetto alla vista, così il volto resta leggibile */
+  function sessRandomPose() {
+    var az = Math.round(rndIn(-120, 120)), el = Math.round(rndIn(-15, 55));
+    setView(az, el);
+    var K = S.lights[0], F = S.lights[1], B = S.lights[2], two = Math.random() < 0.55, side = Math.random() < 0.5 ? -1 : 1;
+    K.on = true; K.az = Math.round(wrapDeg(az + side * rndIn(20, 95))); K.el = Math.round(rndIn(12, 68));
+    K.k = Math.round(rndIn(3800, 6200) / 100) * 100; K.soft = Math.round(rndIn(1.5, 6) * 2) / 2;
+    K.int = Math.round(rndIn(two ? 0.95 : 1.1, two ? 1.45 : 1.6) * 20) / 20;
+    if (two) {
+      F.on = true; F.az = Math.round(wrapDeg(az - side * rndIn(30, 110))); F.el = Math.round(rndIn(-5, 35));
+      F.k = Math.round(rndIn(5500, 7500) / 100) * 100; F.soft = Math.round(rndIn(5, 10) * 2) / 2;
+      F.int = Math.round(rndIn(0.15, 0.45) * 20) / 20;
+    } else F.on = false;
+    B.on = false;
+    syncAll(); changed();
+  }
+  function sessPickModel() {
+    var ids = BUILTIN_MODELS.map(function (m) { return m.id; }).concat(libModels.map(function (m) { return 'u:' + m.id; }));
+    if (ids.length > 1) ids = ids.filter(function (id) { return id !== shownModel; });
+    if (ids.length) selectModel(ids[Math.floor(Math.random() * ids.length)]);
+  }
+  function sessShow() {
+    var left = sess.paused ? sess.left : sess.deadline - Date.now();
+    $('sess-n').textContent = 'Posa ' + sess.n + ' di ' + sess.total;
+    $('sess-t').textContent = sessFmt(left) + (sess.paused ? ' · in pausa' : '');
+    $('sess-out').textContent = 'Sessione in corso: posa ' + sess.n + ' di ' + sess.total + '.';
+  }
+  function sessNext() {
+    if (sess.n >= sess.total) { sessEnd(true); return; }
+    sess.n++;
+    if (S.sessRandom) sessPickModel();
+    sessRandomPose();
+    sess.deadline = Date.now() + Math.max(5, S.sessTime) * 1000;
+    sessBeep(880, 0.25);
+    sessShow();
+  }
+  function sessTick() { if (!sess.on || sess.paused) return; if (sess.deadline - Date.now() <= 0) sessNext(); else sessShow(); }
+  function sessEnd(done) {
+    clearInterval(sess.timer); sess.timer = 0; sess.on = false; sess.paused = false;
+    try { if (sess.wake) { sess.wake.release(); sess.wake = null; } } catch (e) {}
+    if (done) {
+      $('sess-n').textContent = 'Sessione finita'; $('sess-t').textContent = sess.total + (sess.total === 1 ? ' posa' : ' pose');
+      $('sess-out').textContent = 'Sessione finita: ' + sess.total + (sess.total === 1 ? ' posa.' : ' pose.');
+      sessBeep(660, 0.5); toast('Sessione finita.');
+      clearTimeout(sess.end); sess.end = setTimeout(function () { if (!sess.on) $('sess-hud').hidden = true; }, 8000);
+    } else { $('sess-hud').hidden = true; $('sess-out').textContent = 'Sessione fermata.'; }
+    sessUi();
+  }
+  $('sess-start').addEventListener('click', function () {
+    if (sess.on) return;
+    clearTimeout(sess.end);
+    sess.on = true; sess.paused = false; sess.n = 0; sess.total = S.sessCount;
+    $('sess-hud').hidden = false;
+    try { if (navigator.wakeLock && navigator.wakeLock.request) navigator.wakeLock.request('screen').then(function (w) { sess.wake = w; }, function () {}); } catch (e) {}
+    try { if (mqCompact.matches && S.sheet !== 'peek') { S.sheet = 'peek'; applyLayout2(false); } } catch (e) {}
+    sessBeep(1, 0.01);
+    sessUi();
+    sessNext();
+    sess.timer = setInterval(sessTick, 250);
+  });
+  $('sess-pause').addEventListener('click', function () {
+    if (!sess.on) return;
+    if (sess.paused) { sess.paused = false; sess.deadline = Date.now() + sess.left; }
+    else { sess.paused = true; sess.left = Math.max(0, sess.deadline - Date.now()); }
+    sessShow(); sessUi();
+  });
+  $('sess-skip').addEventListener('click', function () { if (sess.on) { sess.paused = false; sessNext(); sessUi(); } });
+  $('sess-stop').addEventListener('click', function () { if (sess.on) sessEnd(false); });
+  $('hud-pause').addEventListener('click', function () { $('sess-pause').click(); });
+  $('hud-skip').addEventListener('click', function () { $('sess-skip').click(); });
+  $('hud-stop').addEventListener('click', function () { $('sess-stop').click(); });
 
   /* il trascinamento sulla vista ruota sempre la vista; testa e luci si regolano dal pannello */
   var mode = 'view';
@@ -2103,46 +2353,12 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     }).catch(function () {});
   }
 
-  /* ---------- filtri sull'immagine: median, sfocatura, grigi, posterizza ---------- */
+  /* ---------- filtri sull'immagine: sfocatura e grigi ---------- */
   var VERT = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
   function fxMaterial(frag, uniforms) {
     uniforms.tDiffuse = { value: null };
     return new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: VERT, fragmentShader: frag, depthTest: false, depthWrite: false });
   }
-  /* median a finestra 7x7: la mediana della luminanza si trova per bisezione, il colore è quello del campione più vicino */
-  var FRAG_MEDIAN = [
-    'uniform sampler2D tDiffuse;',
-    'uniform vec2 uTexel;',
-    'uniform float uStep;',
-    'varying vec2 vUv;',
-    'void main() {',
-    '  float L[49];',
-    '  vec3 C[49];',
-    '  vec2 st = uTexel * uStep;',
-    '  for (int j = 0; j < 7; j++) {',
-    '    for (int i = 0; i < 7; i++) {',
-    '      vec3 c = texture2D(tDiffuse, vUv + vec2(float(i) - 3.0, float(j) - 3.0) * st).rgb;',
-    '      C[j * 7 + i] = c;',
-    '      L[j * 7 + i] = dot(c, vec3(0.2126, 0.7152, 0.0722));',
-    '    }',
-    '  }',
-    '  float lo = 0.0;',
-    '  float hi = 1.0;',
-    '  for (int it = 0; it < 9; it++) {',
-    '    float mid = 0.5 * (lo + hi);',
-    '    float cnt = 0.0;',
-    '    for (int k = 0; k < 49; k++) cnt += step(L[k], mid);',
-    '    if (cnt >= 25.0) hi = mid; else lo = mid;',
-    '  }',
-    '  float best = 9.0;',
-    '  vec3 res = C[24];',
-    '  for (int k = 0; k < 49; k++) {',
-    '    float d = abs(L[k] - hi);',
-    '    if (d < best) { best = d; res = C[k]; }',
-    '  }',
-    '  gl_FragColor = vec4(res, 1.0);',
-    '}'
-  ].join('\n');
   var FRAG_BLUR = [
     'uniform sampler2D tDiffuse;',
     'uniform vec2 uDir;',
@@ -2160,65 +2376,24 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     '  gl_FragColor = vec4(sum / wsum, 1.0);',
     '}'
   ].join('\n');
-  /* media a blocchi: serve a stimare la gamma dei toni dell'immagine */
-  var FRAG_HIST = [
-    'uniform sampler2D tDiffuse;',
-    'uniform vec2 uCell;',
-    'varying vec2 vUv;',
-    'void main() {',
-    '  vec3 s = vec3(0.0);',
-    '  for (int j = 0; j < 4; j++) {',
-    '    for (int i = 0; i < 4; i++) {',
-    '      s += texture2D(tDiffuse, vUv + (vec2(float(i), float(j)) - 1.5) * 0.25 * uCell).rgb;',
-    '    }',
-    '  }',
-    '  gl_FragColor = vec4(s / 16.0, 1.0);',
-    '}'
-  ].join('\n');
   var FRAG_COPY = [
     'uniform sampler2D tDiffuse;',
     'varying vec2 vUv;',
     'void main() { gl_FragColor = vec4(texture2D(tDiffuse, vUv).rgb, 1.0); }'
   ].join('\n');
-  /* grigi e posterizza: le bande si calcolano sulla gamma reale dell'immagine (uLo..uHi) e i bordi tra una banda e l'altra sono lisci di circa un pixel */
   var FRAG_FINAL = [
     'uniform sampler2D tDiffuse;',
-    'uniform vec2 uTexel;',
     'uniform float uGray;',
-    'uniform float uTones;',
-    'uniform float uColor;',
-    'uniform float uLo;',
-    'uniform float uHi;',
     'varying vec2 vUv;',
-    'float lum(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }',
     'void main() {',
     '  vec3 c = texture2D(tDiffuse, vUv).rgb;',
-    '  float y = lum(c);',
-    '  if (uTones > 1.5) {',
-    '    float rng = max(uHi - uLo, 0.02);',
-    '    float yx = lum(texture2D(tDiffuse, vUv + vec2(uTexel.x, 0.0)).rgb) - lum(texture2D(tDiffuse, vUv - vec2(uTexel.x, 0.0)).rgb);',
-    '    float yy = lum(texture2D(tDiffuse, vUv + vec2(0.0, uTexel.y)).rgb) - lum(texture2D(tDiffuse, vUv - vec2(0.0, uTexel.y)).rgb);',
-    '    float t = clamp((y - uLo) / rng, 0.0, 1.0) * uTones;',
-    '    float w = clamp(0.5 * length(vec2(yx, yy)) / rng * uTones * 0.75, 0.002, 0.5);',
-    '    float n = floor(t + 0.5);',
-    '    float lvl = clamp(n - 1.0 + smoothstep(-w, w, t - n), 0.0, uTones - 1.0);',
-    '    if (uColor > 0.5) {',
-    '      float yt = uLo + (lvl + 0.5) / uTones * rng;',
-    '      c = clamp(c * (yt / max(y, 0.004)), 0.0, 1.0);',
-    '    } else {',
-    '      c = vec3(lvl / (uTones - 1.0));',
-    '    }',
-    '  } else if (uGray > 0.5) {',
-    '    c = vec3(y);',
-    '  }',
+    '  if (uGray > 0.5) c = vec3(dot(c, vec3(0.2126, 0.7152, 0.0722)));',
     '  gl_FragColor = vec4(c, 1.0);',
     '}'
   ].join('\n');
-  var matMedian = fxMaterial(FRAG_MEDIAN, { uTexel: { value: new THREE.Vector2(1, 1) }, uStep: { value: 1 } });
   var matBlur = fxMaterial(FRAG_BLUR, { uDir: { value: new THREE.Vector2(1, 0) }, uSigma: { value: 1 } });
-  var matHist = fxMaterial(FRAG_HIST, { uCell: { value: new THREE.Vector2(1, 1) } });
   var matCopy = fxMaterial(FRAG_COPY, {});
-  var matFinal = fxMaterial(FRAG_FINAL, { uTexel: { value: new THREE.Vector2(1, 1) }, uGray: { value: 0 }, uTones: { value: 0 }, uColor: { value: 0 }, uLo: { value: 0 }, uHi: { value: 1 } });
+  var matFinal = fxMaterial(FRAG_FINAL, { uGray: { value: 0 } });
   var fxScene = new THREE.Scene();
   var fxCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   var fxQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), matFinal);
@@ -2682,14 +2857,14 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   function median(a) { if (!a.length) return 0; a.sort(function (x, y) { return x - y; }); return a[a.length >> 1]; }
   /* mediana della luminanza lineare della testa vista di fronte, con le luci attuali (solo luci dirette) */
   function modelMedian() {
-    var rt = null, oc = new THREE.Color(), oa = 1, pi = probe.intensity, sv = sky.visible, ok = false, vals = [];
+    var rt = null, oc = new THREE.Color(), oa = 1, pi = probe.intensity, bi = bounce.intensity, sv = sky.visible, ok = false, vals = [];
     try {
       var W = 192, mc = new THREE.PerspectiveCamera(camera.fov, 1, 0.1, 300);
       mc.position.set(0, TARGET.y, 1.85 / Math.tan(camera.fov * D2R / 2)); mc.lookAt(TARGET); mc.updateMatrixWorld(true);
       rt = new THREE.WebGLRenderTarget(W, W, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat });
       rt.texture.encoding = THREE.sRGBEncoding;
       oa = renderer.getClearAlpha(); renderer.getClearColor(oc);
-      probe.intensity = 0; sky.visible = false;
+      probe.intensity = 0; bounce.intensity = 0; sbGroup.visible = false; sky.visible = false;
       renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, mc);
       var buf = new Uint8Array(W * W * 4);
       renderer.readRenderTargetPixels(rt, 0, 0, W, W, buf);
@@ -2700,7 +2875,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
       ok = vals.length > 200;
     } catch (e) { ok = false; }
     try { renderer.setRenderTarget(null); renderer.setClearColor(oc, oa); } catch (e) {}
-    probe.intensity = pi; sky.visible = sv;
+    probe.intensity = pi; bounce.intensity = bi; sbGroup.visible = !!S.sb; sky.visible = sv;
     if (rt) { try { rt.dispose(); } catch (e) {} }
     return ok ? median(vals) : null;
   }
@@ -2863,55 +3038,20 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     renderer.render(fxScene, fxCam);
   }
   function fxPass(mat, src, dst) { fxPassT(mat, src.texture, dst); }
-  function anyFx() { return !!(S.med || S.blur > 0 || S.gray || S.poster); }
-  /* gamma dei toni: percentili 1% e 99% della luminanza, su una versione a 64x64 dell'immagine filtrata */
-  var HS = 64, hBuf = new Uint8Array(HS * HS * 4), hHist = new Float32Array(256);
-  var rtH = new THREE.WebGLRenderTarget(HS, HS, rtOpts);
-  function autoRange(src) {
-    try {
-      matHist.uniforms.uCell.value.set(1 / HS, 1 / HS);
-      fxPass(matHist, src, rtH);
-      renderer.readRenderTargetPixels(rtH, 0, 0, HS, HS, hBuf);
-      var i, n = HS * HS, acc = 0, lo = 0, hi = 255;
-      for (i = 0; i < 256; i++) hHist[i] = 0;
-      for (i = 0; i < n; i++) hHist[Math.min(255, Math.floor((0.2126 * hBuf[i * 4] + 0.7152 * hBuf[i * 4 + 1] + 0.0722 * hBuf[i * 4 + 2])))]++;
-      for (i = 0; i < 256; i++) { acc += hHist[i]; if (acc >= n * 0.01) { lo = i; break; } }
-      acc = 0;
-      for (i = 255; i >= 0; i--) { acc += hHist[i]; if (acc >= n * 0.01) { hi = i + 1; break; } }
-      var a = lo / 255, b = Math.min(255, hi) / 255;
-      if (b - a < 0.12) { var m = (a + b) / 2; a = m - 0.06; b = m + 0.06; }
-      return [clamp(a, 0, 1), clamp(b, 0, 1)];
-    } catch (e) { return [0, 1]; }
-  }
-  /* catena: median, sfocatura, pulizia, gamma dei toni, grigi/posterizza. k = pixel dell'immagine per pixel CSS */
+  function anyFx() { return !!(S.blur > 0 || S.gray); }
+  /* catena: sfocatura e scala di grigi. k = pixel dell'immagine per pixel CSS */
   function runChain(src, pa, pb, w, h, k, dst) {
-    var cur = src, nxt, i;
+    var cur = src, nxt;
     function nx() { return cur === pa ? pb : pa; }
-    function blur(sig) {
-      var sp = Math.max(sig, 0.3), st = Math.max(1, sp / 3);
+    if (S.blur > 0) {
+      var sp = Math.max(S.blur * 0.6 * k, 0.3), st = Math.max(1, sp / 3);
       matBlur.uniforms.uSigma.value = sp / st;
       matBlur.uniforms.uDir.value.set(st / w, 0);
       nxt = nx(); fxPass(matBlur, cur, nxt); cur = nxt;
       matBlur.uniforms.uDir.value.set(0, st / h);
       nxt = nx(); fxPass(matBlur, cur, nxt); cur = nxt;
     }
-    if (S.med) {
-      var R = S.medAmt * 0.5, passes = clamp(Math.ceil(R / 8), 1, 6);
-      matMedian.uniforms.uTexel.value.set(1 / w, 1 / h);
-      matMedian.uniforms.uStep.value = Math.max(0.5, (R / Math.pow(passes, 0.35)) * k / 3);
-      for (i = 0; i < passes; i++) { nxt = nx(); fxPass(matMedian, cur, nxt); cur = nxt; }
-    }
-    if (S.blur > 0) blur(S.blur * 0.6 * k);
-    var lo = 0, hi = 1;
-    if (S.poster) {
-      if (S.pSmooth > 0) blur(S.pSmooth * 0.5 * k);
-      if (S.pAuto) { var r = autoRange(cur); lo = r[0]; hi = r[1]; }
-    }
-    matFinal.uniforms.uTexel.value.set(1 / w, 1 / h);
     matFinal.uniforms.uGray.value = S.gray ? 1 : 0;
-    matFinal.uniforms.uTones.value = S.poster ? S.tones : 0;
-    matFinal.uniforms.uColor.value = S.pmode === 'color' ? 1 : 0;
-    matFinal.uniforms.uLo.value = lo; matFinal.uniforms.uHi.value = hi;
     fxPass(matFinal, cur, dst);
   }
   /* ---------- disegno della vista ---------- */
@@ -2932,7 +3072,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
   function rpSchedule() {
     if (!rpGL || !ref.tex || !splitOn()) return;
     var b = rpBase();
-    var key = [S.med ? S.medAmt : 0, S.blur, S.gray ? 1 : 0, S.poster ? [S.tones, S.pmode, S.pAuto ? 1 : 0, S.pSmooth].join(',') : 0, ref.id, Math.round(b.w / 8)].join('|');
+    var key = [S.blur, S.gray ? 1 : 0, ref.id, Math.round(b.w / 8)].join('|');
     if (key === rpKey) return;
     rpKey = key;
     clearTimeout(rpTimer);

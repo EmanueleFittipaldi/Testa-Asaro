@@ -4,6 +4,13 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-10-23
+### Added
+- Timed poses tab: duration (30 s, 1, 3, 5, 10, 15 min or custom), number of poses, same model or random models (built-in and uploaded), sound, pause/skip/stop. At every change the view and lights are randomized (at most two lights, moderate intensity). On-screen countdown with controls.
+- Shadowbox: three-sided box (back wall, floor, one side wall, left or right) with a chosen color; it receives the model's cast shadows and bounces colored light onto it (spherical-harmonics approximation, adjustable).
+### Removed
+- Median and posterize filters.
+
 ## [0.17.0] - 2026-10-22
 ### Fixed
 - Median strength now grows smoothly along the whole slider: the number of passes used to change at fixed points and made the effect dip slightly before rising again.
