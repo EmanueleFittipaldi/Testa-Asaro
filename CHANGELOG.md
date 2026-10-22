@@ -4,6 +4,11 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-10-22
+### Changed
+- The side panel on Mac, landscape iPad and landscape phones now has the same tabs as the phone sheet (Lights, Material, Environment, Reference, Head and model) to jump straight to a section instead of scrolling.
+- Removed the subtitle under the app title.
+
 ## [0.14.0] - 2026-10-22
 ### Changed
 - Median is gentler: the slider now spans from subtle to strong in smaller steps.

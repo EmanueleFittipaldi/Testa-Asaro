@@ -81,7 +81,11 @@ button, input { font: inherit; color: inherit; }
   .head { display: none; }
 }
 /* iPhone e iPad in verticale: la testa occupa lo schermo e i controlli stanno in un foglio che sale dal basso */
-.sheet-top { display: none; }
+.sheet-top { display: block; position: sticky; top: 0; z-index: 3; background: var(--panel); border-bottom: 1px solid var(--line); }
+.app:not(.compact) .grip { display: none; }
+.app:not(.compact) .tabs { flex-wrap: wrap; overflow: visible; padding: 4px 12px 10px; }
+.app:not(.compact) .tabs button { padding: 6px 12px; font-size: 13px; }
+.sec[hidden] { display: none; }
 .app.compact { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; max-height: calc(100vh - 8px); max-height: calc(100dvh - 8px); }
 body.compact { padding: 8px max(8px, env(safe-area-inset-left, 0px)) 0 max(8px, env(safe-area-inset-right, 0px)); }
 .app.compact .panel { border-radius: 16px 16px 0 0; border-bottom: 0; height: 44vh; height: 44dvh; padding-bottom: env(safe-area-inset-bottom, 0px); height: var(--sheet-h, 44dvh); }
@@ -296,14 +300,13 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
   </main>
 
   <aside class="panel" id="panel">
+    <header class="head">
+      <h1>Testa Asaro</h1>
+    </header>
     <div class="sheet-top" id="sheet-top">
       <button type="button" class="grip" id="grip" aria-label="Alza o abbassa il pannello dei controlli"><i></i></button>
       <nav class="tabs" id="tabs" role="tablist" aria-label="Sezioni dei controlli"></nav>
     </div>
-    <header class="head">
-      <h1>Testa Asaro</h1>
-      <p>Riferimento per luci, ombre e valori</p>
-    </header>
 
     <details class="sec" open>
       <summary>Luci</summary>
@@ -1295,8 +1298,8 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     appEl.classList.toggle('panel-off', !compact && !!S.panelOff);
     Array.prototype.forEach.call(panelEl.querySelectorAll(':scope > details.sec'), function (d) {
       var mine = secTab(d) === S.tab;
-      d.hidden = compact && !mine;
-      if (compact && mine && openTab) d.open = true;
+      d.hidden = !mine;
+      if (mine && openTab) d.open = true;
     });
     Array.prototype.forEach.call($('tabs').querySelectorAll('button'), function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-tab') === S.tab)); });
     need = true;
