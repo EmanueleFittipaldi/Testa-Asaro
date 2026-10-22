@@ -4,6 +4,12 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-22
+### Added
+- Adaptive layout for Mac, iPad and iPhone: on iPhone and portrait iPad the controls live in a bottom sheet (peek / half / full height) with tabs (Lights, Material, Environment, Reference, Head and model); on Mac and landscape iPad the side panel stays, narrower on medium screens, and can be hidden with a button below the zoom controls.
+- Landscape phones get a narrow side panel without the title.
+- Touch screens: larger buttons, sliders and inputs; text inputs no longer trigger page zoom.
+
 ## [0.10.0] - 2026-10-22
 ### Fixed
 - Removed the black gap that appeared after loading a reference image (the page can no longer scroll).

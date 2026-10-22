@@ -69,8 +69,57 @@ button, input { font: inherit; color: inherit; }
   grid-template-columns: minmax(0, 1fr) 344px;
   gap: 12px;
 }
-@media (max-width: 760px) {
-  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 54%) minmax(0, 1fr); gap: 10px; }
+/* iPad in orizzontale e Mac: pannello laterale, un po' più stretto sugli schermi medi, richiudibile */
+@media (min-width: 861px) and (max-width: 1180px) { .app { grid-template-columns: minmax(0, 1fr) 312px; } .app .lightbox { grid-template-columns: minmax(0, 132px) minmax(0, 1fr); gap: 10px; } .app .lcol .chip { padding-inline: 9px; } }
+.app.panel-off { grid-template-columns: minmax(0, 1fr); }
+.app.panel-off .panel { display: none; }
+/* telefono in orizzontale: poca altezza, quindi niente titolo e pannello stretto */
+@media (max-height: 520px) {
+  body { padding-block: 8px; }
+  .app { max-height: calc(100vh - 16px); max-height: calc(100dvh - 16px); grid-template-columns: minmax(0, 1fr) 300px; }
+  .app.panel-off { grid-template-columns: minmax(0, 1fr); }
+  .head { display: none; }
+}
+/* iPhone e iPad in verticale: la testa occupa lo schermo e i controlli stanno in un foglio che sale dal basso */
+.sheet-top { display: none; }
+.app.compact { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; max-height: calc(100vh - 8px); max-height: calc(100dvh - 8px); }
+body.compact { padding: 8px max(8px, env(safe-area-inset-left, 0px)) 0 max(8px, env(safe-area-inset-right, 0px)); }
+.app.compact .panel { border-radius: 16px 16px 0 0; border-bottom: 0; height: 44vh; height: 44dvh; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.app.compact[data-sheet="peek"] .panel { height: calc(86px + env(safe-area-inset-bottom, 0px)); overflow: hidden; }
+.app.compact[data-sheet="full"] .panel { height: 76vh; height: 76dvh; }
+.app.compact .head { display: none; }
+.app.compact .sheet-top { display: block; position: sticky; top: 0; z-index: 3; background: var(--panel); border-bottom: 1px solid var(--line); }
+.app.compact .sec[hidden] { display: none; }
+.app.compact .sec { border-top: 0; }
+.grip { display: flex; justify-content: center; align-items: center; width: 100%; height: 26px; border: 0; background: transparent; cursor: grab; touch-action: none; padding: 0; }
+.grip i { width: 40px; height: 5px; border-radius: 3px; background: var(--line); display: block; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding: 0 12px 10px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { flex: none; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-size: 14px; cursor: pointer; color: var(--fg); }
+.tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+.hud-ptoggle { top: 100px; right: 10px; display: flex; padding: 3px; }
+.hud-ptoggle button { width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; color: inherit; }
+.hud-ptoggle svg { width: 20px; height: 20px; }
+.app.compact .hud-ptoggle { display: none; }
+body { touch-action: manipulation; }
+/* schermi a tocco: bersagli più grandi e campi che non fanno ingrandire la pagina */
+@media (pointer: coarse) {
+  .btn, .chip { min-height: 42px; }
+  .chip { padding: 9px 13px; font-size: 14px; }
+  .btn { font-size: 14px; }
+  .rng input { height: 38px; }
+  .rng input::-webkit-slider-runnable-track { height: 5px; }
+  .rng input::-webkit-slider-thumb { width: 30px; height: 30px; margin-top: -12.5px; }
+  .rng label { font-size: 14px; } .rng output { font-size: 13px; }
+  .check { min-height: 38px; align-items: center; }
+  .check input { width: 20px; height: 20px; }
+  .sec > summary { padding: 16px; }
+  .hud-zoom button, .hud-ptoggle button { width: 44px; height: 44px; }
+  .hud-ptoggle { top: 120px; }
+  .hud-tl button { padding: 11px 12px; }
+  .rp-btns button { padding: 11px 13px; }
+  .chip-x { padding: 0 13px; }
+  input[type="text"], input[type="number"], .numin { font-size: 16px; }
 }
 
 /* palcoscenico */
@@ -217,6 +266,7 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
       <button type="button" id="zoom-in" aria-label="Avvicina" title="Avvicina (+)">+</button>
       <button type="button" id="zoom-out" aria-label="Allontana" title="Allontana (&minus;)">&minus;</button>
     </div>
+    <div class="hud hud-ptoggle"><button type="button" id="panel-toggle" aria-label="Mostra o nascondi il pannello" title="Mostra o nascondi il pannello"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M12.5 3.5v13"/></svg></button></div>
     <button type="button" class="hud hint-i" id="hint-i" aria-label="Come si muove la vista" aria-expanded="false">i</button>
     <div class="hud hud-bl" id="hint" hidden></div>
     </div>
@@ -244,6 +294,10 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
   </main>
 
   <aside class="panel" id="panel">
+    <div class="sheet-top" id="sheet-top">
+      <button type="button" class="grip" id="grip" aria-label="Alza o abbassa il pannello dei controlli"><i></i></button>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Sezioni dei controlli"></nav>
+    </div>
     <header class="head">
       <h1>Testa Asaro</h1>
       <p>Riferimento per luci, ombre e valori</p>
@@ -728,7 +782,8 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
       focal: 85, gray: false, med: false, medAmt: 6, poster: false, pmode: 'gray', tones: 5, blur: 0,
       estPose: true, estLight: true, estAlignOn: true, refLayout: 'float', split: 55,
       scaleOn: false, scaleN: 9, scaleSz: 36, scaleVert: true, refOp: 100, refLock: true,
-      env: '', envRot: 0, envInt: 1, envBg: true, model: 'head'
+      env: '', envRot: 0, envInt: 1, envBg: true, model: 'head',
+      tab: 'luci', sheet: 'half', panelOff: false
     };
   }
   var S = defaults(), localT = 0, touched = false, lsOK = false;
@@ -1209,6 +1264,62 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     $('readout').textContent = s;
   }
   function syncAll() { syncers.forEach(function (f) { f(); }); syncReadout(); syncPad(); }
+
+
+  /* ---------- adattamento allo schermo: Mac, iPad e iPhone ---------- */
+  var appEl = document.querySelector('.app'), panelEl = $('panel');
+  var mqCompact = window.matchMedia ? window.matchMedia('(max-width: 860px) and (min-height: 521px)') : { matches: false };
+  var TABS = [
+    { k: 'luci', n: 'Luci', s: ['Luci'] },
+    { k: 'mat', n: 'Materiale', s: ['Materiale e piani', 'Studio dei valori'] },
+    { k: 'amb', n: 'Ambiente', s: ['Ambiente'] },
+    { k: 'rif', n: 'Riferimento', s: ['Immagine di riferimento'] },
+    { k: 'testa', n: 'Testa e modello', s: ['Testa e vista', 'Il tuo modello'] }
+  ];
+  function secTab(d) {
+    var t = d.querySelector('summary') ? d.querySelector('summary').textContent.trim() : '';
+    for (var i = 0; i < TABS.length; i++) if (TABS[i].s.indexOf(t) >= 0) return TABS[i].k;
+    return 'luci';
+  }
+  $('tabs').innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-tab="' + t.k + '" aria-selected="false">' + t.n + '</button>'; }).join('');
+  if (['luci', 'mat', 'amb', 'rif', 'testa'].indexOf(S.tab) < 0) S.tab = 'luci';
+  if (['peek', 'half', 'full'].indexOf(S.sheet) < 0) S.sheet = 'half';
+  function applyLayout2(openTab) {
+    var compact = !!mqCompact.matches;
+    appEl.classList.toggle('compact', compact);
+    document.body.classList.toggle('compact', compact);
+    appEl.setAttribute('data-sheet', S.sheet);
+    appEl.classList.toggle('panel-off', !compact && !!S.panelOff);
+    Array.prototype.forEach.call(panelEl.querySelectorAll(':scope > details.sec'), function (d) {
+      var mine = secTab(d) === S.tab;
+      d.hidden = compact && !mine;
+      if (compact && mine && openTab) d.open = true;
+    });
+    Array.prototype.forEach.call($('tabs').querySelectorAll('button'), function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-tab') === S.tab)); });
+    need = true;
+  }
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button') : null;
+    if (!b) return;
+    S.tab = b.getAttribute('data-tab');
+    if (S.sheet === 'peek') S.sheet = 'half';
+    applyLayout2(true); panelEl.scrollTop = 0; save();
+  });
+  (function () {
+    var y0 = null, order = ['peek', 'half', 'full'], g = $('grip');
+    g.addEventListener('pointerdown', function (e) { y0 = e.clientY; try { g.setPointerCapture(e.pointerId); } catch (err) {} });
+    g.addEventListener('pointercancel', function () { y0 = null; });
+    g.addEventListener('pointerup', function (e) {
+      if (y0 === null) return;
+      var dy = e.clientY - y0, i = order.indexOf(S.sheet); y0 = null;
+      if (dy < -24) i = Math.min(2, i + 1); else if (dy > 24) i = Math.max(0, i - 1); else i = (i + 1) % 3;
+      S.sheet = order[i]; applyLayout2(false); save();
+    });
+  })();
+  $('panel-toggle').addEventListener('click', function () { S.panelOff = !S.panelOff; applyLayout2(false); save(); });
+  if (mqCompact.addEventListener) mqCompact.addEventListener('change', function () { applyLayout2(true); });
+  else if (mqCompact.addListener) mqCompact.addListener(function () { applyLayout2(true); });
+  applyLayout2(true);
 
   /* il trascinamento sulla vista ruota sempre la vista; testa e luci si regolano dal pannello */
   var mode = 'view';
@@ -1894,7 +2005,7 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     if (el) el.textContent = Cloud.ok ? 'Preset, materiali, modelli e panorami si salvano nel tuo account: li ritrovi alla prossima apertura, anche su altri dispositivi.' : 'Preset, materiali, modelli e panorami si salvano su questo dispositivo (se il browser lo permette).';
   }
   function refreshAfterLoad() {
-    try { renderPresets(); renderMats(); setFocal(S.focal); syncAll(); updateScene(); carRefresh(); storeNote(); } catch (e) {}
+    try { renderPresets(); renderMats(); setFocal(S.focal); applyLayout2(true); syncAll(); updateScene(); carRefresh(); storeNote(); } catch (e) {}
   }
   function initStores() {
     storeNote();

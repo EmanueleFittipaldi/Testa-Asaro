@@ -10,6 +10,7 @@ The Asaro head is the classic planar head used in ateliers to teach how light fa
 
 - **3D Asaro planar head** plus basic study shapes; load your own `.glb`, `.gltf`, `.obj` or `.stl` models.
 - **Orbit, pan and zoom** with mouse, trackpad or touch.
+- **Responsive layout**: side panel on Mac and landscape iPad (collapsible), bottom sheet with tabs on iPhone and portrait iPad.
 - **Lighting**: key, fill and rim lights with color and intensity, lighting presets, and HDRI environment lighting (built-in environments or your own `.hdr`, `.jpg`, `.png` panoramas).
 - **Materials**: several surface materials, or the original colors of a loaded model.
 - **Value studies**: median, posterize, blur and value-scale filters to see big shapes and value groups.
