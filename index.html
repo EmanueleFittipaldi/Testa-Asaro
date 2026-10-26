@@ -1758,6 +1758,17 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
     carRefresh();
     need = true;
   }
+  /* la texture ha davvero pixel trasparenti? (si guarda una copia piccola) */
+  function texHasAlpha(tex) {
+    if (!tex || !tex.image) return false;
+    try {
+      var cv = document.createElement('canvas'); cv.width = cv.height = 64;
+      var cx = cv.getContext('2d'); cx.drawImage(tex.image, 0, 0, 64, 64);
+      var d = cx.getImageData(0, 0, 64, 64).data;
+      for (var i = 3; i < d.length; i += 4) if (d[i] < 250) return true;
+      return false;
+    } catch (e) { return true; }
+  }
   function setCustom(obj, key, quiet) {
     dropCustom();
     var holder = new THREE.Group();
@@ -1779,6 +1790,8 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
         /* capelli e barba a "cartoline" trasparenti: l'ombra deve seguire il canale alfa, altrimenti ogni cartolina proietta un rettangolo pieno sul volto */
         var mts = Array.isArray(m.material) ? m.material : [m.material];
         mts.forEach(function (mt) {
+          /* materiale a doppia faccia ma senza trasparenza reale (la pelle): disegnarlo a doppia faccia crea chiazze scure, basta la faccia frontale */
+          if (mt && mt.side === THREE.DoubleSide && !texHasAlpha(mt.map)) { mt.side = THREE.FrontSide; mt.needsUpdate = true; }
           if (mt && mt.transparent && mt.map && !m.customDepthMaterial) {
             m.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: mt.map, alphaTest: 0.5 });
           }

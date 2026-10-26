@@ -4,6 +4,10 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.18.3] - 2026-10-26
+### Fixed
+- Dark blotches on loaded models whose skin material is double-sided without real transparency: those materials now render front faces only.
+
 ## [0.18.2] - 2026-10-26
 ### Fixed
 - Models with transparent hair/beard cards (e.g. alpha-blended glTF) cast solid rectangular shadows on the face; shadows now follow the texture alpha.
