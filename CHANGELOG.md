@@ -4,6 +4,10 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.18.2] - 2026-10-26
+### Fixed
+- Models with transparent hair/beard cards (e.g. alpha-blended glTF) cast solid rectangular shadows on the face; shadows now follow the texture alpha.
+
 ## [0.18.1] - 2026-10-26
 ### Fixed
 - Uploaded models with original colors showed black blocky patches (shadow acne on double-sided file materials); shadows now use back faces for those materials.
