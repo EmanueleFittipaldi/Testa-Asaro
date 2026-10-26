@@ -1772,6 +1772,8 @@ if (false) module.exports = { poseResiduals: poseResiduals, LANDMARKS: LANDMARKS
       if (m.isMesh) {
         if (m.geometry && !m.geometry.attributes.normal) m.geometry.computeVertexNormals();
         m.userData.orig = m.material;
+        /* i materiali del file a doppia faccia producono acne d'ombra (macchie nere a blocchi): le ombre usano le facce posteriori come per gli altri */
+        (Array.isArray(m.material) ? m.material : [m.material]).forEach(function (mt) { if (mt && mt.side === THREE.DoubleSide) mt.shadowSide = THREE.BackSide; });
         m.material = $('orig-mat').checked ? m.userData.orig : customMat;
         m.castShadow = true; m.receiveShadow = true;
         customMeshes.push(m);

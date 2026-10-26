@@ -4,6 +4,10 @@ Versions follow [Semantic Versioning](https://semver.org/): `0.x` during private
 
 ## [Unreleased]
 
+## [0.18.1] - 2026-10-26
+### Fixed
+- Uploaded models with original colors showed black blocky patches (shadow acne on double-sided file materials); shadows now use back faces for those materials.
+
 ## [0.18.0] - 2026-10-23
 ### Added
 - Timed poses tab: duration (30 s, 1, 3, 5, 10, 15 min or custom), number of poses, same model or random models (built-in and uploaded), sound, pause/skip/stop. At every change the view and lights are randomized (at most two lights, moderate intensity). On-screen countdown with controls.
